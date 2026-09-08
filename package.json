@@ -1,0 +1,23 @@
+{
+  "name": "ai-news",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "AI 新闻聚合 CLI：抓取多个 RSS 源，生成带中文摘要的 Markdown 日报",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
+    "@anthropic-ai/vertex-sdk": "^0.19.7",
+    "entities": "^8.1.0",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.7.0"
+  }
+}
