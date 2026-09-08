@@ -44,9 +44,13 @@ async function loadCache(cachePath: string): Promise<Cache> {
   try {
     const raw = JSON.parse(await readFile(cachePath, 'utf8')) as Cache;
     const cutoff = Date.now() - CACHE_TTL_MS;
-    // 启动时剪掉过期条目，免得缓存无限膨胀
+    // 启动时剪掉过期条目，免得缓存无限膨胀；
+    // 顺带剪掉别的模型生成的 —— 否则换模型后旧摘要会继续被端上来，
+    // 而 frontmatter 的 summary_model 写的是当前 MODEL，标签和内容对不上
     return Object.fromEntries(
-      Object.entries(raw).filter(([, v]) => new Date(v.createdAt).getTime() >= cutoff),
+      Object.entries(raw).filter(
+        ([, v]) => v.model === MODEL && new Date(v.createdAt).getTime() >= cutoff,
+      ),
     );
   } catch {
     return {};
