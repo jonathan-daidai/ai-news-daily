@@ -1,3 +1,4 @@
 node_modules/
-output/
+# 生成的日报入库，摘要缓存不入库（本地派生状态，每次跑都变）
+output/.cache/
 .env
