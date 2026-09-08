@@ -1,5 +1,6 @@
 import type { Article, RunOptions, SourceResult, SummaryUsage } from './types.ts';
 import { escapeMdLinkText, escapeMdTable, escapeMdText, mdLinkTarget } from './normalize.ts';
+import { MODEL } from './summarize.ts';
 
 export interface ReportInput {
   articles: Article[];
@@ -98,7 +99,7 @@ export function renderMarkdown(input: ReportInput): string {
     `active_sources: ${activeSources}`,
     `configured_sources: ${results.length}`,
     `duplicates_merged: ${duplicatesMerged}`,
-    `summary_model: ${summaryUsage.disabledReason ? 'none' : 'claude-opus-5'}`,
+    `summary_model: ${summaryUsage.disabledReason ? 'none' : MODEL}`,
     '---',
   ].join('\n');
 

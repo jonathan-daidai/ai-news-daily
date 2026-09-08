@@ -1,6 +1,6 @@
 # ai-news
 
-AI 新闻聚合 CLI：抓取多个 RSS 源，去重后用 Claude Opus 5 生成一句话中文摘要，输出 Markdown 日报。
+AI 新闻聚合 CLI：抓取多个 RSS 源，去重后用 Claude Sonnet 5 生成一句话中文摘要，输出 Markdown 日报。
 
 ```markdown
 - `07:56` [WeatherNext 3: Our most advanced global weather AI model](https://blog.google/...) — Hacker News (AI) · 11 points · [讨论](https://news.ycombinator.com/item?id=49604257)
@@ -87,7 +87,7 @@ sources.ts  →  pipeline.ts  →  extract.ts  →  summarize.ts  →  report.ts
 1. **抓取**（`fetch.ts`）— 自己发请求而不用 `rss-parser` 的 `parseURL`，为的是拿到 UA、超时和重试的控制权。网络错误/超时/5xx 重试一次。
 2. **去重**（`pipeline.ts`）— **只按归一化后的 URL 去重**，刻意不做标题模糊匹配：TechCrunch 和 Verge 报道同一事件、标题相近，是两篇正当的不同文章。跨源命中时原发媒体优先于聚合器，附加信息（HN 分数、讨论链接）始终合并。
 3. **抓正文**（`extract.ts`）— 见下。
-4. **摘要**（`summarize.ts`）— Claude Opus 5，`effort: low`，40–60 字一句话。
+4. **摘要**（`summarize.ts`）— Claude Sonnet 5，`effort: low`，40–60 字一句话。
 5. **渲染**（`report.ts`）— 带 frontmatter 的 Markdown，可选同名 `.json`。
 
 ### 为什么正文是本地抓的
@@ -115,7 +115,7 @@ Vertex AI **不提供服务端 `web_fetch` 工具**（只有基础版 `web_searc
 
 ## 成本
 
-摘要的 token 花费在运行结束时打印。费率按官方 API 的 Opus 5（$5 / $25 每百万 token）估算，
+摘要的 token 花费在运行结束时打印。费率按官方 API 的 Sonnet 5（$3 / $15 每百万 token）估算，
 **Vertex 实际按 Google Cloud 费率结算**，数字仅供参考。
 
 ## 开发

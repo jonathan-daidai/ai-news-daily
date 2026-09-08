@@ -14,7 +14,7 @@ npm run typecheck   # tsc --noEmit —— 唯一的自动化检查
 **没有测试、没有 linter、没有构建步骤。** tsx 直接跑 `.ts`（ESM，import 路径要带 `.ts` 后缀）。
 改完只能靠 typecheck 加真跑一次。
 
-**跑摘要是真金白银**，全量约 $0.4。改抓取/渲染逻辑用 `--no-summary`；必须验证摘要时用
+**跑摘要是真金白银**，全量约 $0.25（Sonnet 5）。改抓取/渲染逻辑用 `--no-summary`；必须验证摘要时用
 `--hours 2` 缩小样本，或靠缓存（同一天重复跑基本全命中，$0.00）。
 
 ## 不要破坏的约定
@@ -44,4 +44,4 @@ npm run typecheck   # tsc --noEmit —— 唯一的自动化检查
 陷阱是 SDK 把 ADC 获取失败包成 `APIConnectionError`，它**属于** `Anthropic.APIError`，
 用 `!(e instanceof Anthropic.APIError)` 当判据会漏掉。
 
-**刻意不禁用 thinking** —— Opus 5 上关掉会让模型偶尔把内部标记漏进可见文本。
+**刻意不禁用 thinking** —— 之前在 Opus 5 上关掉会让模型偶尔把内部标记漏进可见文本。

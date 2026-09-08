@@ -7,11 +7,11 @@ import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
 import { extractArticleText } from './extract.ts';
 import type { Article, RunOptions, SummaryUsage } from './types.ts';
 
-/** Vertex 上当代模型用不带前缀的原始 ID */
-const MODEL = 'claude-opus-5';
-/** 按官方 API 的 Opus 5 费率 $5 / $25 每百万 token 估算；Vertex 实际按 GCP 费率结算 */
-const COST_IN_PER_TOKEN = 5 / 1_000_000;
-const COST_OUT_PER_TOKEN = 25 / 1_000_000;
+/** Vertex 上当代模型用不带前缀的原始 ID。摘要是轻任务，Sonnet 够用且比 Opus 便宜一个量级 */
+export const MODEL = 'claude-sonnet-5';
+/** 按官方 API 的 Sonnet 5 费率 $3 / $15 每百万 token 估算；Vertex 实际按 GCP 费率结算 */
+const COST_IN_PER_TOKEN = 3 / 1_000_000;
+const COST_OUT_PER_TOKEN = 15 / 1_000_000;
 
 /** 正文没有实质内容时模型必须原样输出的哨兵串 */
 const SENTINEL = '无法获取正文';
@@ -132,7 +132,7 @@ async function summarizeOne(
     model: MODEL,
     max_tokens: 4000,
     // 摘要是轻任务，low 足够且省钱。刻意不禁用 thinking ——
-    // Opus 5 上关掉 thinking 会让模型偶尔把内部标记漏进可见文本。
+    // 之前在 Opus 5 上关掉会让模型偶尔把内部标记漏进可见文本，换 Sonnet 后没再去试。
     output_config: { effort: 'low' },
     system: SYSTEM_PROMPT,
     messages: [
