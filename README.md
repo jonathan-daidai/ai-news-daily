@@ -39,8 +39,19 @@ npm install
 
 ```bash
 gcloud auth application-default login          # 在 GCE/Cloud Run 上可省略，走元数据服务器
+```
+
+两个环境变量都是**可选**的：
+
+| 变量 | 不设时 |
+|---|---|
+| `ANTHROPIC_VERTEX_PROJECT_ID` | 从 ADC 解析（GCE 元数据服务器、或 ADC 文件里的 `quota_project_id`）；解析不出来才报错 |
+| `CLOUD_ML_REGION` | 默认 `global` |
+
+只有当 ADC 本身不带项目（常见于用户凭证登录且没设 quota project）时才需要显式 export：
+
+```bash
 export ANTHROPIC_VERTEX_PROJECT_ID=your-gcp-project
-export CLOUD_ML_REGION=global                  # 不设则默认 global
 ```
 
 ## 用法
