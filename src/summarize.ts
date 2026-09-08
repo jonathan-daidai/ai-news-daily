@@ -63,11 +63,13 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 /**
  * 走 Vertex AI，凭证是 GCP ADC（GCE 元数据服务器或
  * `gcloud auth application-default login`），不需要 ANTHROPIC_API_KEY。
+ *
+ * projectId 刻意不在这里校验：SDK 自己会先读 ANTHROPIC_VERTEX_PROJECT_ID，
+ * 读不到再从 ADC 里解析（GCE 元数据、ADC 文件里的 quota_project_id）。
+ * 在这儿提前抛错等于把 SDK 能自己搞定的场景给堵死了。
  */
 function createClient(): AnthropicVertex {
-  const projectId = process.env.ANTHROPIC_VERTEX_PROJECT_ID;
-  if (!projectId) throw new Error('未设置 ANTHROPIC_VERTEX_PROJECT_ID');
-  return new AnthropicVertex({ projectId, region: process.env.CLOUD_ML_REGION ?? 'global' });
+  return new AnthropicVertex({ region: process.env.CLOUD_ML_REGION ?? 'global' });
 }
 
 /**
@@ -82,8 +84,18 @@ function fatalReason(e: unknown): string | undefined {
   if (e instanceof Anthropic.NotFoundError) {
     return `Vertex 上找不到 ${MODEL}，检查 CLOUD_ML_REGION 与模型开通状态（404）`;
   }
-  // google-auth-library 在拿不到 ADC 时抛的是普通 Error，不是 APIError
-  if (e instanceof Error && !(e instanceof Anthropic.APIError) && /credential|auth/i.test(e.message)) {
+  if (!(e instanceof Error)) return undefined;
+
+  // ADC 里也没带 project 时 SDK 抛的普通 Error
+  if (/No projectId was given/i.test(e.message)) {
+    return '无法确定 GCP 项目：请设置 ANTHROPIC_VERTEX_PROJECT_ID';
+  }
+  // SDK 把 ADC 获取失败包成 APIConnectionError，不特判的话会被当成
+  // 可重试的网络抖动，然后对每一篇重复报同一个错
+  if (/Failed to acquire Google OAuth credentials/i.test(e.message)) {
+    return `无法获取 GCP 凭证：${e.cause instanceof Error ? e.cause.message : e.message}`;
+  }
+  if (!(e instanceof Anthropic.APIError) && /credential|auth/i.test(e.message)) {
     return `无法获取 GCP 凭证：${e.message}`;
   }
   return undefined;
