@@ -102,8 +102,12 @@ Vertex AI **不提供服务端 `web_fetch` 工具**（只有基础版 `web_searc
 
 ### 缓存
 
-摘要按 `dedupeKey`（归一化 URL）缓存在 `<outDir>/.cache/summaries.json`，TTL 7 天，
-启动时自动剪掉过期条目。同一天重复运行基本全部命中，花费 $0.00。`--no-cache` 强制重算。
+摘要按 `dedupeKey`（归一化 URL）缓存在 `<outDir>/.cache/summaries.json`，TTL 7 天。
+启动时会剪掉两类条目：**过期的**，以及**别的模型生成的** —— 换 `MODEL` 后旧摘要必须失效，
+否则报告 frontmatter 里的 `summary_model` 会和实际内容对不上。
+
+同一天重复运行基本全部命中，花费 $0.00。`--no-cache` 强制重算，注意它**既不读也不写**缓存，
+所以用它重跑的结果不会落盘。
 
 ## 输出
 
